@@ -3,7 +3,24 @@
 
 import Foundation
 
+protocol TimeKeeper {
+	var now: Date { get }
+}
+
+struct RealTime: TimeKeeper {
+	var now: Date {
+		return Date()
+	}
+}
+
 struct Stopwatch {
+	
+	internal var timeKeeper: TimeKeeper
+	
+	init(timeKeeper: TimeKeeper = RealTime()) {
+		self.timeKeeper = timeKeeper
+	}
+	
   private var startTime: Date?
   private var accumulated: TimeInterval = 0
   
@@ -12,11 +29,11 @@ struct Stopwatch {
   }
   
   var elapsed: TimeInterval {
-    return accumulated + (startTime.map { Date().timeIntervalSince($0) } ?? 0)
+    return accumulated + (startTime.map { timeKeeper.now.timeIntervalSince($0) } ?? 0)
   }
   
   mutating func start() {
-    startTime = Date()
+		startTime = timeKeeper.now
   }
   
   mutating func pause() {
@@ -29,3 +46,27 @@ struct Stopwatch {
     accumulated = 0
   }
 }
+
+final class TestTimeKeeper: TimeKeeper {
+	var now = Date()
+}
+
+var testTimeKeeper = TestTimeKeeper()
+
+var stopWatch = Stopwatch(timeKeeper: testTimeKeeper)
+stopWatch.elapsed == 0
+stopWatch.isRunning == false
+
+stopWatch.start()
+stopWatch.isRunning == true
+stopWatch.elapsed == 0
+testTimeKeeper.now += 10
+stopWatch.elapsed == 10
+stopWatch.isRunning == true
+
+stopWatch.pause()
+stopWatch.isRunning == false
+stopWatch.elapsed == 10
+testTimeKeeper.now += 3
+stopWatch.elapsed == 10
+
