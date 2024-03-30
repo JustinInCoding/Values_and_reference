@@ -3,5 +3,6 @@
     <pages>
         <page name='Basic Rules'/>
         <page name='TimeKeeperMock'/>
+        <page name='inout'/>
     </pages>
 </playground>
