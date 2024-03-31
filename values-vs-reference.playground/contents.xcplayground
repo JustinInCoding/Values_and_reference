@@ -5,5 +5,6 @@
         <page name='TimeKeeperMock'/>
         <page name='inout'/>
         <page name='mutationOfSelf'/>
+        <page name='EnforeTheLaw'/>
     </pages>
 </playground>
